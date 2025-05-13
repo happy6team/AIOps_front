@@ -30,23 +30,25 @@
     </div>
     
     <div class="metrics-summary">
+      <!-- 시간 표시 메트릭 카드 -->
       <div class="metric-card">
         <div class="metric-title">기간</div>
-        <div class="metric-value">{{ dateRange }} 분</div>
+        <div class="metric-value">{{ dateRange }}분</div>
       </div>
-      <div class="metric-card">
-        <div class="metric-title">평균 footfall</div>
-        <div class="metric-value">{{ avgFootfall }}</div>
-      </div>
-      <div class="metric-card">
-        <div class="metric-title">평균 temp_mode</div>
-        <div class="metric-value">{{ avgTempMode }}</div>
-      </div>
-      <div class="metric-card">
-        <div class="metric-title">평균 USS</div>
-        <div class="metric-value">{{ avgUSS }}</div>
+      
+      <!-- 각 컬럼별 메트릭 카드 -->
+      <div
+        v-for="col in columns"
+        :key="col"
+        class="metric-card"
+      >
+        <div class="metric-title">{{ col }}</div>
+        <div class="metric-value">
+          <span class="max-value">{{ statByColumn[col].max }}</span> / 
+          <span class="min-value">{{ statByColumn[col].min }}</span>
       </div>
     </div>
+  </div>
     
     <div class="chart-container">
       <div class="chart-grid">
@@ -96,6 +98,21 @@ const avgUSS = computed(() => {
   return (sum / chartData.value.USS.length).toFixed(1)
 })
 
+const statByColumn = computed(() => {
+  const result = {}
+  columns.forEach(col => {
+    const values = chartData.value[col]?.map(d => parseFloat(d.y)) || []
+    if (values.length === 0) {
+      result[col] = { max: 0, min: 0 }
+    } else {
+      result[col] = {
+        max: Math.max(...values).toFixed(1),
+        min: Math.min(...values).toFixed(1)
+      }
+    }
+  })
+  return result
+})
 
 const fetchData = async () => {
   const baseURL = 'http://10.250.72.241:8000'

@@ -1,0 +1,101 @@
+.chart-card {
+    background-color: #1e293b;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    color: #f8fafc;
+    /* 고정 높이 대신 최소 높이 사용 */
+    min-height: 350px;
+    /* 필요시 자동으로 커지도록 변경 */
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+  }
+  
+  h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #f1f5f9;
+    margin: 0;
+  }
+  
+  .chart-actions {
+    display: flex;
+    gap: 0.5rem;
+  }
+  
+  .action-btn {
+    background: none;
+    border: none;
+    color: #94a3b8;
+    cursor: pointer;
+    padding: 0.25rem;
+    border-radius: 0.25rem;
+    transition: all 0.2s ease;
+  }
+  
+  .action-btn:hover {
+    color: #f1f5f9;
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+  
+  .action-icon {
+    font-size: 0.875rem;
+  }
+  
+  .chart-content {
+    flex: 1;
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+  }
+  
+  .chart-footer {
+    display: flex;
+    justify-content: space-between;
+    padding-top: 0.75rem;
+    margin-top: 0.5rem;
+    border-top: 1px solid #334155;
+  }
+  
+  .stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .stat-label {
+    font-size: 0.75rem;
+    color: #94a3b8;
+  }
+  
+  .stat-value {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #f1f5f9;
+  }
+  
+  /* 반응형 조정 */
+  @media (max-width: 600px) {
+    .chart-card {
+      height: 300px;
+    }
+    
+    .chart-footer {
+      flex-direction: row;
+      gap: 0.5rem;
+    }
+    
+    .stat-item {
+      flex: 1;
+    }
+  }

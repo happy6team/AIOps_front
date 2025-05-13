@@ -3,9 +3,9 @@
     <div class="chart-header">
       <h3>{{ title }}</h3>
       <div class="chart-actions">
-        <button class="action-btn" title="자세히 보기">
-          <span class="action-icon">🔍</span>
-        </button>
+          <button class="action-btn" title="자세히 보기" @click="openModal">
+            <span class="action-icon">🔍</span>
+          </button>
         <button class="action-btn" title="설정">
           <span class="action-icon">⚙️</span>
         </button>
@@ -28,12 +28,22 @@
         <span class="stat-value">{{ minimum }}</span>
       </div>
     </div>
+    <!-- 모달 추가-->
+    <ModalChart
+      v-if="showModal"
+      :title="title"
+      :data="data"
+      :defectData="defectData"
+      @close="closeModal"
+    />
   </div>
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { ref, computed } from 'vue'
 import { Line } from 'vue-chartjs'
+import ModalChart from '@/components/ModalChart.vue'
+
 import {
   Chart as ChartJS,
   Title,
@@ -45,6 +55,7 @@ import {
   PointElement
 } from 'chart.js'
 
+
 ChartJS.register(Title, Tooltip, Legend, LineElement, CategoryScale, LinearScale, PointElement)
 
 const props = defineProps({
@@ -52,7 +63,8 @@ const props = defineProps({
   data: {
     type: Array,
     default: () => []
-  }
+  },
+  defectData: Array
 })
 
 // 통계 계산
@@ -179,6 +191,7 @@ const options = {
   },
   scales: {
     x: {
+      reverse : true,
       grid: {
         color: '#33415533', // 반투명 그리드 라인
         tickLength: 8
@@ -233,6 +246,16 @@ const options = {
   animation: {
     duration: 1000
   }
+}
+// 모달 추가
+const showModal = ref(false)
+
+const openModal = () => {
+  showModal.value = true
+}
+
+const closeModal = () => {
+  showModal.value = false
 }
 </script>
 

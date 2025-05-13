@@ -45,7 +45,7 @@
             <div v-for="item in streamData" :key="item.timestamp"
                  :class="['data-row', item.defect ? 'defect' : 'normal']">
               <div class="row-header">
-                <div class="timestamp">{{ item.timestamp }}</div>
+                <div class="timestamp">{{ formatTime(item.timestamp) }}</div>
                 <div class="status" :class="item.defect ? 'status-defect' : 'status-normal'">
                   {{ item.defect ? '결함 감지' : '정상' }}
                 </div>
@@ -80,34 +80,42 @@
   import dayjs from 'dayjs'
 
   const router = useRouter()
-  const columns = ["footfall", "tempMode", "AQ", "USS", "CS", "VOC", "RP", "IP", "Temperature"]
+  const columns = ["footfall", "temp_mode", "AQ", "USS", "CS", "VOC", "RP", "IP", "temperature"]
   const streamData = ref([])
   
-  const generateDummy = () => {
-    const timestamp = dayjs().format('YYYY-MM-DD HH:mm:ss')
-    const item = { timestamp }
-    for (const col of columns) {
-      item[col] = (Math.random() * 100).toFixed(2)
+  const fetchLatestSensorData = async () => {
+  try {
+    const res = await fetch('http://10.250.72.241:8000/sensor-data/latest')
+    if (!res.ok) throw new Error('네트워크 오류 발생')
+    const data = await res.json()
+
+    const formatted = {
+      timestamp: data.collection_time,
+      defect: data.fail,
+      fail_probability: data.fail_probability ?? 0
     }
-    item.defect = Math.random() > 0.7 ? 1 : 0
-    item.probability = item.defect ? (0.7 + Math.random() * 0.3).toFixed(2) : (Math.random() * 0.5).toFixed(2)
-    return item
+
+    columns.forEach(col => {
+      formatted[col] = data[col]
+    })
+
+    streamData.value.unshift(formatted)
+    if (streamData.value.length > 20) streamData.value.pop()
+  } catch (err) {
+    console.error('실시간 데이터 요청 실패:', err)
   }
-  
-  onMounted(() => {
-    // 초기 데이터 로드
-    for (let i = 0; i < 5; i++) {
-      streamData.value.unshift(generateDummy())
-    }
-    
-    // 실시간 데이터 업데이트
-    setInterval(() => {
-      streamData.value.unshift(generateDummy())
-      if (streamData.value.length > 20) streamData.value.pop()
-    }, 5000)
-  })
-  
-  const goToDetail = () => {
-    router.push('/analysis')
-  }
+}
+
+onMounted(() => {
+  fetchLatestSensorData()
+  setInterval(fetchLatestSensorData, 5000)
+})
+
+const goToDetail = () => {
+  router.push('/analysis')
+}
+
+const formatTime = (rawTime) => {
+  return dayjs(rawTime).format('YYYY.MM.DD HH:mm:ss')  // 또는 'A hh:mm:ss' 도 가능
+}
   </script>
